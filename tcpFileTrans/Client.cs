@@ -17,6 +17,8 @@ namespace tcpFileTrans
         private FileStream fs;
         private TcpClient myTcpClient;
         private NetworkStream ns;
+        private BinaryReader br;
+        private BinaryWriter bw;
 
         public Client(string ipToConnect, int portToConnect)
         {
@@ -67,6 +69,23 @@ namespace tcpFileTrans
             ns.Flush();
             fs.Close();
             ns.Close();
+        }
+
+        public void sendName(string fileName)
+        {
+            try
+            {
+                string nameToSend = fileName;
+                this.bw = new BinaryWriter(ns);
+
+                bw.Write(fileName);
+                bw.Flush();
+                ns.Flush();
+            }
+            catch (Exception exp)
+            {
+
+            }
         }
     }
 }

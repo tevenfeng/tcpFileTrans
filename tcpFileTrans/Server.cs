@@ -7,6 +7,7 @@ using System.Net;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
+using MetroFramework;
 
 namespace tcpFileTrans
 {
@@ -15,6 +16,7 @@ namespace tcpFileTrans
         private TcpListener myListener;
         private int port;
         private string savePath;
+        private BinaryReader br;
 
         public Server(int port ,string savePath)
         {
@@ -32,16 +34,20 @@ namespace tcpFileTrans
         {
             while (true)
             {
-                try
-                {
+                //try
+                //{
                     int size = 0;
                     int len = 0;
                     TcpClient client = myListener.AcceptTcpClient();
 
                     NetworkStream stream = client.GetStream();
+
                     if (stream != null)
                     {
-                        string fileSavePath = this.savePath+"\\";//获得用户保存文件的路径
+                        br = new BinaryReader(stream);
+                        string name = br.ReadString();
+
+                        string fileSavePath = this.savePath + "\\" + name; ;//获得用户保存文件的路径
                         FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
 
                         byte[] buffer = new byte[512];
@@ -55,13 +61,12 @@ namespace tcpFileTrans
                         stream.Close();
                         client.Close();                        
                     }
-                }
-                catch (Exception ex)
-                {
-                    
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                     
+                //}
             }
         }
-
     }
 }
