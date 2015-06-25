@@ -9,6 +9,9 @@ using System.IO;
 
 namespace tcpFileTrans
 {
+    /// <summary>
+    /// “客户端”代码，主要用于发送消息和文件
+    /// </summary>
     class Client
     {
         #region properties

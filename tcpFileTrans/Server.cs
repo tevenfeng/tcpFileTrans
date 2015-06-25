@@ -50,12 +50,15 @@ namespace tcpFileTrans
         /// <param name="port">监听的端口</param>
         /// <param name="savePath">接收文件的存储路径</param>
         public Server(int port ,string savePath)
-        {
+        {            
             this.port = port;
             this.savePath = savePath;
+
+            //开始监听
             this.myListener = new TcpListener(IPAddress.Any, this.port);
             this.myListener.Start();
 
+            //开新线程来接收消息和文件
             Thread recvThread = new Thread(ReceiveMsg);
             recvThread.Start();
             recvThread.IsBackground = true;            
@@ -74,7 +77,9 @@ namespace tcpFileTrans
             {
                 try
                 {
+                    //缓冲区大小
                     int size = 0;
+                    //已发送长度
                     int len = 0;
                     TcpClient client = myListener.AcceptTcpClient();
 
@@ -95,6 +100,7 @@ namespace tcpFileTrans
                             len += size;
                         }
 
+                        //将已接收的文件名和存储路径放入dict中方便更新已接受文件列表
                         dict.Add(name, fileSavePath);
 
                         fs.Flush();
@@ -112,7 +118,7 @@ namespace tcpFileTrans
         }
 
         /// <summary>
-        /// 获取已接收文件的文件名和存储路径，用于更新已接收文件列表
+        /// 获取已接收文件的文件名和存储路径，用于在界面上更新已接收文件列表
         /// </summary>
         /// <returns></returns>
         public Dictionary<string, string> getDict()

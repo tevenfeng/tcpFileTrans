@@ -60,6 +60,7 @@ namespace tcpFileTrans
         {
             lock (obj)
             {
+                //因为是刷新列表，所以要先清空
                 if (result != null)
                 {
                     result.Clear();
@@ -67,12 +68,17 @@ namespace tcpFileTrans
 
                 try
                 {
+                    //扫描整个网段
                     for (int i = 1; i < 256; i++)
                     {
+                        //ping主机从而获取其IP地址和主机名
                         Ping myPing = new Ping();
                         myPing.PingCompleted += new PingCompletedEventHandler(_myPing_PingCompleted);
 
+                        //如果路由器不是这么设置的这个地方就要改~~~偷个懒~^_^
                         string pingIP = "192.168.1." + i.ToString();
+
+                        //异步ping，防止主界面过长时间不响应
                         myPing.SendAsync(pingIP, null);
                         Thread.Sleep(1);
                     }
@@ -91,6 +97,7 @@ namespace tcpFileTrans
         /// <param name="e"></param>
         private void _myPing_PingCompleted(object sender, PingCompletedEventArgs e)
         {
+            //ping通说明该主机可连接
             if (e.Reply.Status == IPStatus.Success)
             {
                 ListViewItem tmp = new ListViewItem(Dns.GetHostEntry(e.Reply.Address).HostName);
