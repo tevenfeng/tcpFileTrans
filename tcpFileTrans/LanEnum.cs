@@ -41,10 +41,6 @@ namespace tcpFileTrans
                 {
                     result.Clear();
                 }
-                ListViewItem tmp = new ListViewItem("Teven");
-                tmp.ImageIndex = 0;
-                tmp.SubItems.Add("127.0.0.1");
-                result.Add(tmp);
 
                 try
                 {

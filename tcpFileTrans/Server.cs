@@ -8,6 +8,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using MetroFramework;
+using System.Windows.Forms;
 
 namespace tcpFileTrans
 {
@@ -17,6 +18,7 @@ namespace tcpFileTrans
         private int port;
         private string savePath;
         private BinaryReader br;
+        private Dictionary<string, string> dict = new Dictionary<string, string>();
 
         public Server(int port ,string savePath)
         {
@@ -27,15 +29,15 @@ namespace tcpFileTrans
 
             Thread recvThread = new Thread(ReceiveMsg);
             recvThread.Start();
-            recvThread.IsBackground = true;
+            recvThread.IsBackground = true;            
         }
 
         public void ReceiveMsg()
         {
             while (true)
             {
-                //try
-                //{
+                try
+                {
                     int size = 0;
                     int len = 0;
                     TcpClient client = myListener.AcceptTcpClient();
@@ -47,7 +49,7 @@ namespace tcpFileTrans
                         br = new BinaryReader(stream);
                         string name = br.ReadString();
 
-                        string fileSavePath = this.savePath + "\\" + name; ;//获得用户保存文件的路径
+                        string fileSavePath = this.savePath + "\\" + name;//获得用户保存文件的路径
                         FileStream fs = new FileStream(fileSavePath, FileMode.Create, FileAccess.Write);
 
                         byte[] buffer = new byte[512];
@@ -56,17 +58,26 @@ namespace tcpFileTrans
                             fs.Write(buffer, 0, size);
                             len += size;
                         }
+
+                        dict.Add(name, fileSavePath);
+
                         fs.Flush();
                         stream.Flush();
                         stream.Close();
                         client.Close();                        
                     }
-                //}
-                //catch (Exception ex)
-                //{
+                    
+                }
+                catch (Exception ex)
+                {
                      
-                //}
+                }                
             }
+        }
+
+        public Dictionary<string, string> getDict()
+        {
+            return dict;
         }
     }
 }

@@ -17,7 +17,6 @@ namespace tcpFileTrans
         private FileStream fs;
         private TcpClient myTcpClient;
         private NetworkStream ns;
-        private BinaryReader br;
         private BinaryWriter bw;
 
         public Client(string ipToConnect, int portToConnect)
