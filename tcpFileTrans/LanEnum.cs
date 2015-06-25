@@ -11,16 +11,36 @@ using System.Threading;
 
 namespace tcpFileTrans
 {
+    /// <summary>
+    /// 局域网主机发现类，使用ping的方式发现主机并获取其主机名和ip地址
+    /// </summary>
     class LanEnum
     {
+        #region properties
+        /// <summary>
+        /// List<ListViewItem>，里面存放的是当前局域网内能ping通的主机
+        /// </summary>
         private List<ListViewItem> result = new List<ListViewItem>();
+        /// <summary>
+        /// 线程互斥锁
+        /// </summary>
         private object obj = new object();
 
+        #endregion
+
+        #region 构造函数
         public LanEnum()
         {
 
         }
+        #endregion
 
+        #region methods
+
+        /// <summary>
+        /// 返回一个List<ListViewItem>，里面存放的是当前局域网内能ping通的主机
+        /// </summary>
+        /// <returns></returns>
         public List<ListViewItem> getResult()
         {
             ThreadStart threadStart;
@@ -33,6 +53,9 @@ namespace tcpFileTrans
             return result;
         }
 
+        /// <summary>
+        /// 线程创建时调用此方法来搜索局域网主机
+        /// </summary>
         private void searchMethod()
         {
             lock (obj)
@@ -61,6 +84,11 @@ namespace tcpFileTrans
             }
         }
 
+        /// <summary>
+        /// ping完成回掉函数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _myPing_PingCompleted(object sender, PingCompletedEventArgs e)
         {
             if (e.Reply.Status == IPStatus.Success)
@@ -70,5 +98,7 @@ namespace tcpFileTrans
                 result.Add(tmp);
             }
         }
+
+        #endregion
     }
 }

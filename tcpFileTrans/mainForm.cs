@@ -40,17 +40,21 @@ namespace tcpFileTrans
             mainForm_addEventHandlers();
             this.Focus();
 
+            //创建一个线程，开始监听
             Thread serverThread = new Thread(serverListen);
             serverThread.Start();
         }
 
-
+        /// <summary>
+        /// 线程调用函数，用于创建监听tcp连接的服务器
+        /// </summary>
         private void serverListen()
         {
             myServer = new Server(9100, Environment.CurrentDirectory);
         }
 
         #region 自定义控件的初始化
+
         protected void Init_userControls()
         {
             //刷新按钮
@@ -104,9 +108,7 @@ namespace tcpFileTrans
             this.Controls.Add(tabCtr_sendRecv);
 
         }
-        #endregion
 
-        #region 三个list的初始化，设置表头等
         private void hostList_Init()
         {
             this.listView_hostList.Columns.Add("主机名");
@@ -135,6 +137,7 @@ namespace tcpFileTrans
             this.listView_fileSend.Columns[1].Width = 265;
             this.listView_fileSend.View = View.Details;
         }
+
         #endregion
 
         #region 各种事件处理函数，如Esc退出、鼠标拖动窗口
