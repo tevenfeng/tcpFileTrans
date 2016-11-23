@@ -95,7 +95,7 @@ namespace tcpFileTrans
 
             //浏览按钮
             button_exploreFile = new MetroButton();
-            button_exploreFile.Location = new Point(330-61, 390);
+            button_exploreFile.Location = new Point(330 - 61, 390);
             button_exploreFile.Text = "浏览";
             button_exploreFile.Visible = false;
             button_exploreFile.Size = new System.Drawing.Size(61, 24);
@@ -141,10 +141,8 @@ namespace tcpFileTrans
         /// </summary>
         private void hostList_Init()
         {
-            this.listView_hostList.Columns.Add("主机名");
             this.listView_hostList.Columns.Add("IP地址");
-            this.listView_hostList.Columns[0].Width = 130;
-            this.listView_hostList.Columns[1].Width = 130;
+            //this.listView_hostList.Columns[0].Width = 130;
             this.listView_hostList.View = View.Details;
             this.listView_hostList.MultiSelect = false;
         }
@@ -211,10 +209,11 @@ namespace tcpFileTrans
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button_refreshFileList_Click(object sender,EventArgs e)
+        private void button_refreshFileList_Click(object sender, EventArgs e)
         {
             //MetroMessageBox.Show(this,"刷新失败！","失败了呀");    
             var tmp = myServer.getDict();
+            this.listView_fileRecv.Items.Clear();
             foreach (var p in tmp)
             {
                 ListViewItem temp = new ListViewItem();
@@ -240,7 +239,7 @@ namespace tcpFileTrans
                     if (this.listView_hostList.SelectedItems.Count != 0)
                     {
                         //确保用户选择了一个发送目的地
-                        this.iptoSend = this.listView_hostList.SelectedItems[0].SubItems[1].Text.ToString();
+                        this.iptoSend = this.listView_hostList.SelectedItems[0].SubItems[0].Text.ToString();
                         myThread.Start();
                     }
                     else
@@ -255,7 +254,7 @@ namespace tcpFileTrans
             }
             catch (Exception ee)
             {
-                MetroMessageBox.Show(this,"发送失败。错误信息："+ee.Message.ToString(),"失败了耶");
+                MetroMessageBox.Show(this, "发送失败。错误信息：" + ee.Message.ToString(), "失败了耶");
             }
         }
 
@@ -279,12 +278,12 @@ namespace tcpFileTrans
                     myClient.sendFile(filePaths[i]);
 
                     //发送成功提示
-                    MetroMessageBox.Show(this, "第" + i + "个文件发送成功！", "成功啦");
+                    MetroMessageBox.Show(this, "第" + (i + 1) + "个文件发送成功！", "成功啦");
                 }
                 else
                 {
                     //连接失败
-                    MetroMessageBox.Show(this,"连接失败！请确认接收主机是否已开启！","失败了");
+                    MetroMessageBox.Show(this, "连接失败！请确认接收主机是否已开启！", "失败了");
                 }
             }
         }
@@ -296,7 +295,7 @@ namespace tcpFileTrans
         /// <param name="e"></param>
         private void button_exploreFile_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog(); 
+            OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "所有文件(*.*)|*.*";
             dialog.Multiselect = true;
             DialogResult result = dialog.ShowDialog();
@@ -313,12 +312,12 @@ namespace tcpFileTrans
                 foreach (string name in names)
                 {
                     FileInfo myFI = new FileInfo(name);
-                    
+
                     //添加到待发送文件列表中显示出来
                     ListViewItem tmp = new ListViewItem();
                     tmp.Text = myFI.Name;
-                    tmp.SubItems.Add(myFI.DirectoryName);                 
-                    this.listView_fileSend.Items.Add(tmp);                    
+                    tmp.SubItems.Add(myFI.DirectoryName);
+                    this.listView_fileSend.Items.Add(tmp);
                 }
             }
         }

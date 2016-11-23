@@ -54,14 +54,16 @@ namespace tcpFileTrans
             this.port = port;
             this.savePath = savePath;
 
-            //开始监听
+            //开始监听文件传输端口
             this.myListener = new TcpListener(IPAddress.Any, this.port);
             this.myListener.Start();
 
             //开新线程来接收消息和文件
             Thread recvThread = new Thread(ReceiveMsg);
             recvThread.Start();
-            recvThread.IsBackground = true;            
+            recvThread.IsBackground = true;
+            
+                        
         }
 
         #endregion

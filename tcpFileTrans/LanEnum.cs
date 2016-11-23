@@ -76,7 +76,7 @@ namespace tcpFileTrans
                         myPing.PingCompleted += new PingCompletedEventHandler(_myPing_PingCompleted);
 
                         //如果路由器不是这么设置的这个地方就要改~~~偷个懒~^_^
-                        string pingIP = "192.168.1." + i.ToString();
+                        string pingIP = "10.0.2." + i.ToString();
 
                         //异步ping，防止主界面过长时间不响应
                         myPing.SendAsync(pingIP, null);
@@ -100,8 +100,7 @@ namespace tcpFileTrans
             //ping通说明该主机可连接
             if (e.Reply.Status == IPStatus.Success)
             {
-                ListViewItem tmp = new ListViewItem(Dns.GetHostEntry(e.Reply.Address).HostName);
-                tmp.SubItems.Add(e.Reply.Address.ToString());
+                ListViewItem tmp = new ListViewItem(e.Reply.Address.ToString());
                 result.Add(tmp);
             }
         }
