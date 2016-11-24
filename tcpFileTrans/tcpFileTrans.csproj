@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Broadcaster.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="LanEnum.cs" />
     <Compile Include="mainForm.cs">

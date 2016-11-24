@@ -191,6 +191,9 @@ namespace tcpFileTrans
             LanEnum myLanEnum = new LanEnum();
             List<ListViewItem> result = myLanEnum.getResult();
 
+            Broadcaster myBroadcaster = new Broadcaster();
+            myBroadcaster.getSubnetMask();
+
             this.listView_hostList.BeginUpdate();
 
             if (result != null)
