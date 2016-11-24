@@ -40,6 +40,7 @@ namespace tcpFileTrans
         /// </summary>
         private Dictionary<string, string> dict = new Dictionary<string, string>();
 
+        private Thread recvThread = null;
         #endregion
 
         #region 构造函数
@@ -59,11 +60,9 @@ namespace tcpFileTrans
             this.myListener.Start();
 
             //开新线程来接收消息和文件
-            Thread recvThread = new Thread(ReceiveMsg);
-            recvThread.Start();
-            recvThread.IsBackground = true;
-            
-                        
+            this.recvThread = new Thread(ReceiveMsg);
+            this.recvThread.Start();
+            this.recvThread.IsBackground = true;                                   
         }
 
         #endregion
@@ -126,6 +125,12 @@ namespace tcpFileTrans
         public Dictionary<string, string> getDict()
         {
             return dict;
+        }
+
+        public void closeServer()
+        {
+            this.myListener.Stop();
+            this.recvThread.Abort();
         }
 
         #endregion

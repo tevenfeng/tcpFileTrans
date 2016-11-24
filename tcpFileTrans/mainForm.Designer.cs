@@ -63,8 +63,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(445, 720);
-            //this.Controls.Add(this.listView_fileSend);
-            //this.Controls.Add(this.listView_fileRecv);
             this.Controls.Add(this.listView_hostList);
             this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -73,6 +71,7 @@
             this.Padding = new System.Windows.Forms.Padding(23, 85, 23, 28);
             this.Resizable = false;
             this.Text = "文件传输";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.mainForm_FormClosed);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.mainForm_KeyDown);
             this.ResumeLayout(false);
 

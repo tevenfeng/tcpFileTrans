@@ -12,6 +12,8 @@ using MetroFramework;
 using MetroFramework.Controls;
 using System.IO;
 using System.Threading;
+using System.Net;
+using System.Net.Sockets;
 
 namespace tcpFileTrans
 {
@@ -40,6 +42,15 @@ namespace tcpFileTrans
         /// </summary>
         private string[] filePaths = null, fileNames = null;
 
+        private Thread serverThread = null;
+
+        private Thread userStatusThread = null;
+
+        private Thread statusBroadCaster = null;
+
+        private Broadcaster myBroadcaster = null;
+
+        private List<ListViewItem> result = null;
         #endregion
 
         #region 构造函数
@@ -59,11 +70,21 @@ namespace tcpFileTrans
             fileSend_Init();
             Init_userControls();
             mainForm_addEventHandlers();
-            this.Focus();
+            this.Focus();           
 
             //创建一个服务端线程，开始监听是否有其它主机发送消息和文件过来
-            Thread serverThread = new Thread(serverListen);
+            serverThread = new Thread(serverListen);
             serverThread.Start();
+
+            //创建一个服务端线程，开始监听是否有新用户上线和下线的广播消息
+            userStatusThread = new Thread(userListen);
+            userStatusThread.Start();
+            userStatusThread.IsBackground = true;
+
+            myBroadcaster = new Broadcaster();
+            statusBroadCaster = new Thread(sendUserStatusEnter);
+            statusBroadCaster.Start();
+            statusBroadCaster.IsBackground = true;            
         }
 
         #endregion
@@ -75,6 +96,34 @@ namespace tcpFileTrans
         private void serverListen()
         {
             myServer = new Server(9100, Environment.CurrentDirectory);
+        }
+
+        /// <summary>
+        /// 线程调用函数，用于创建监听新用户上线下线的广播消息
+        /// </summary>
+        private void userListen()
+        {
+            UdpClient myUdpClient = new UdpClient(new IPEndPoint(IPAddress.Any, 9101));
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 9101);
+            while (true) {
+                byte[] buff = myUdpClient.Receive(ref groupEP);
+                string test = groupEP.Address.ToString();
+                if (groupEP.Address.ToString() != myBroadcaster.Ip)
+                {
+                    string msg = Encoding.Default.GetString(buff);
+                    string fromIP = groupEP.Address.ToString();
+                    ListViewItem newItem = new ListViewItem(fromIP);
+                    if (!this.result.Contains(newItem))
+                    {
+                        this.result.Add(newItem);
+                    }
+                }
+            }
+        }
+
+        private void sendUserStatusEnter()
+        {
+            this.myBroadcaster.enterBroadCast();
         }
 
         #region 自定义控件的初始化，这部分代码主要是界面之类的东西
@@ -188,11 +237,8 @@ namespace tcpFileTrans
                 listView_hostList.Items.Clear();
             }
 
-            LanEnum myLanEnum = new LanEnum();
-            List<ListViewItem> result = myLanEnum.getResult();
-
-            Broadcaster myBroadcaster = new Broadcaster();
-            myBroadcaster.getSubnetMask();
+            //LanEnum myLanEnum = new LanEnum();
+            //List<ListViewItem> result = myLanEnum.getResult();
 
             this.listView_hostList.BeginUpdate();
 
@@ -374,6 +420,14 @@ namespace tcpFileTrans
                 default:
                     break;
             }
+        }
+
+        private void mainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.myServer.closeServer();
+            this.serverThread.Abort();
+            this.userStatusThread.Abort();
+            this.statusBroadCaster.Abort();
         }
 
         /// <summary>
