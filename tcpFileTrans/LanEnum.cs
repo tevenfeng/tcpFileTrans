@@ -11,100 +11,100 @@ using System.Threading;
 
 namespace tcpFileTrans
 {
-    /// <summary>
-    /// 局域网主机发现类，使用ping的方式发现主机并获取其主机名和ip地址
-    /// </summary>
-    class LanEnum
-    {
-        #region properties
         /// <summary>
-        /// List<ListViewItem>，里面存放的是当前局域网内能ping通的主机
+        /// 局域网主机发现类，使用ping的方式发现主机并获取其主机名和ip地址
         /// </summary>
-        private List<ListViewItem> result = new List<ListViewItem>();
-        /// <summary>
-        /// 线程互斥锁
-        /// </summary>
-        private object obj = new object();
-
-        #endregion
-
-        #region 构造函数
-        public LanEnum()
+        class LanEnum
         {
+            #region properties
+            /// <summary>
+            /// List<ListViewItem>，里面存放的是当前局域网内能ping通的主机
+            /// </summary>
+            private List<ListViewItem> result = new List<ListViewItem>();
+            /// <summary>
+            /// 线程互斥锁
+            /// </summary>
+            private object obj = new object();
 
-        }
-        #endregion
+            #endregion
 
-        #region methods
-
-        /// <summary>
-        /// 返回一个List<ListViewItem>，里面存放的是当前局域网内能ping通的主机
-        /// </summary>
-        /// <returns></returns>
-        public List<ListViewItem> getResult()
-        {
-            ThreadStart threadStart;
-            threadStart = new ThreadStart(searchMethod);
-            Thread th1 = new Thread(threadStart);
-
-            th1.Start();
-            th1.Join();
-
-            return result;
-        }
-
-        /// <summary>
-        /// 线程创建时调用此方法来搜索局域网主机
-        /// </summary>
-        private void searchMethod()
-        {
-            lock (obj)
+            #region 构造函数
+            public LanEnum()
             {
-                //因为是刷新列表，所以要先清空
-                if (result != null)
-                {
-                    result.Clear();
-                }
 
-                try
+            }
+            #endregion
+
+            #region methods
+
+            /// <summary>
+            /// 返回一个List<ListViewItem>，里面存放的是当前局域网内能ping通的主机
+            /// </summary>
+            /// <returns></returns>
+            public List<ListViewItem> getResult()
+            {
+                ThreadStart threadStart;
+                threadStart = new ThreadStart(searchMethod);
+                Thread th1 = new Thread(threadStart);
+
+                th1.Start();
+                th1.Join();
+
+                return result;
+            }
+
+            /// <summary>
+            /// 线程创建时调用此方法来搜索局域网主机
+            /// </summary>
+            private void searchMethod()
+            {
+                lock (obj)
                 {
-                    //扫描整个网段
-                    for (int i = 1; i < 256; i++)
+                    //因为是刷新列表，所以要先清空
+                    if (result != null)
                     {
-                        //ping主机从而获取其IP地址和主机名
-                        Ping myPing = new Ping();
-                        myPing.PingCompleted += new PingCompletedEventHandler(_myPing_PingCompleted);
+                        result.Clear();
+                    }
 
-                        //如果路由器不是这么设置的这个地方就要改~~~偷个懒~^_^
-                        string pingIP = "10.0.2." + i.ToString();
+                    try
+                    {
+                        //扫描整个网段
+                        for (int i = 1; i < 256; i++)
+                        {
+                            //ping主机从而获取其IP地址和主机名
+                            Ping myPing = new Ping();
+                            myPing.PingCompleted += new PingCompletedEventHandler(_myPing_PingCompleted);
 
-                        //异步ping，防止主界面过长时间不响应
-                        myPing.SendAsync(pingIP, null);
-                        Thread.Sleep(1);
+                            //如果路由器不是这么设置的这个地方就要改~~~偷个懒~^_^
+                            string pingIP = "192.168.1." + i.ToString();
+
+                            //异步ping，防止主界面过长时间不响应
+                            myPing.SendAsync(pingIP, null);
+                            Thread.Sleep(1);
+                        }
+                    }
+                    catch (Exception exp)
+                    {
+                        MessageBox.Show("错误！");
                     }
                 }
-                catch (Exception exp)
+            }
+
+            /// <summary>
+            /// ping完成回掉函数
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private void _myPing_PingCompleted(object sender, PingCompletedEventArgs e)
+            {
+                //ping通说明该主机可连接
+                if (e.Reply.Status == IPStatus.Success)
                 {
-                    MessageBox.Show("错误！");
+                    ListViewItem tmp = new ListViewItem(e.Reply.Address.ToString());
+                    result.Add(tmp);
                 }
             }
-        }
 
-        /// <summary>
-        /// ping完成回掉函数
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void _myPing_PingCompleted(object sender, PingCompletedEventArgs e)
-        {
-            //ping通说明该主机可连接
-            if (e.Reply.Status == IPStatus.Success)
-            {
-                ListViewItem tmp = new ListViewItem(e.Reply.Address.ToString());
-                result.Add(tmp);
-            }
+            #endregion
         }
-
-        #endregion
-    }
 }

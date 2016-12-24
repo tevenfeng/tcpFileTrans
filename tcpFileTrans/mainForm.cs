@@ -76,15 +76,15 @@ namespace tcpFileTrans
             serverThread = new Thread(serverListen);
             serverThread.Start();
 
-            //创建一个服务端线程，开始监听是否有新用户上线和下线的广播消息
-            userStatusThread = new Thread(userListen);
-            userStatusThread.Start();
-            userStatusThread.IsBackground = true;
+            ////创建一个服务端线程，开始监听是否有新用户上线和下线的广播消息
+            //userStatusThread = new Thread(userListen);
+            //userStatusThread.Start();
+            //userStatusThread.IsBackground = true;
 
-            myBroadcaster = new Broadcaster();
-            statusBroadCaster = new Thread(sendUserStatusEnter);
-            statusBroadCaster.Start();
-            statusBroadCaster.IsBackground = true;            
+            //myBroadcaster = new Broadcaster();
+            //statusBroadCaster = new Thread(sendUserStatusEnter);
+            //statusBroadCaster.Start();
+            //statusBroadCaster.IsBackground = true;            
         }
 
         #endregion
@@ -237,8 +237,8 @@ namespace tcpFileTrans
                 listView_hostList.Items.Clear();
             }
 
-            //LanEnum myLanEnum = new LanEnum();
-            //List<ListViewItem> result = myLanEnum.getResult();
+            LanEnum myLanEnum = new LanEnum();
+            List<ListViewItem> result = myLanEnum.getResult();
 
             this.listView_hostList.BeginUpdate();
 
